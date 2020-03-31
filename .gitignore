@@ -1,0 +1,6 @@
+# Output of pkger.
+pkged.go
+
+# VSCode debug binary.
+__debug_bin
+

@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            "env": {},
+            "args": []
+            // "args": ["-latitude=40.7128","-longitude=-74.0060", "-location-name=New York City", "-metric=false"]
+            // "args": ["-latitude=42.8782","-longitude=-8.5448", "-location-name=Santiago de Compostela", "-metric=true"]
+            // "args": ["-latitude=21.4389","-longitude=-158.0000", "-location-name=O‘ahu", "-metric=true"]
+            // "args": ["-latitude=28.2723","-longitude=-16.6425", "-location-name=Tenerife", "-metric=true"]
+            // "args": ["-latitude=-23.5505","-longitude=-46.6333", "-location-name=São Paulo", "-metric=true"]
+            // "args": ["-latitude=35.6762","-longitude=139.6503", "-location-name=Tokyo", "-metric=true"]
+            // "args": ["-latitude=-37.8136","-longitude=144.9631", "-location-name=Melbourne", "-metric=true"]
+            // "args": ["-latitude=-41.2865","-longitude=174.7762", "-location-name=Wellington", "-metric=true"]
+            // "args": ["-latitude=39.9042","-longitude=116.4074", "-location-name=Beijing", "-metric=true"]
+        }
+    ]
+}

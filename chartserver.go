@@ -21,8 +21,6 @@ import (
 	"hamchart/chartgen"
 	"log"
 	"net/http"
-
-	"github.com/markbates/pkger"
 )
 
 var serverAddress = flag.String("server_address", "127.0.0.1:8080", "Address of the HTTP server.")
@@ -31,7 +29,7 @@ func main() {
 	flag.Parse()
 
 	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(pkger.Dir("/web")))
+	mux.Handle("/", http.FileServer(http.Dir("web")))
 	mux.HandleFunc("/chart", chartgen.ChartHandler)
 
 	server := &http.Server{

@@ -22,16 +22,15 @@ import (
 	"image/png"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
-
-	"github.com/markbates/pkger"
 )
 
 var worldMap image.Image
 
 func init() {
-	file, err := pkger.Open("/assets/land_shallow_topo_8192.png")
+	file, err := os.Open("assets/land_shallow_topo_8192.png")
 	if err != nil {
 		panic(err)
 	}

@@ -23,11 +23,11 @@ import (
 	"image/png"
 	"io"
 	"math"
+	"os"
 	"strings"
 	"unicode"
 
 	"github.com/jung-kurt/gofpdf"
-	"github.com/markbates/pkger"
 )
 
 const leftMargin, rightMargin, topMargin, bottomMargin float64 = 0.25, 0.25, 0.25, 0.25
@@ -252,7 +252,7 @@ func (c PdfChart) drawChart(pdf *gofpdf.Fpdf, width float64, top float64, bottom
 }
 
 func readFile(name string) ([]byte, error) {
-	file, err := pkger.Open(name)
+	file, err := os.Open(name)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +268,7 @@ func readFile(name string) ([]byte, error) {
 // Generate outputs a PDF to the given writer with the given configuration.
 func (c PdfChart) Generate(out io.Writer) error {
 	contentWidth, contentHeight := c.WidthInches-(leftMargin+rightMargin), c.HeightInches-(topMargin+bottomMargin)
-	ttf, err := readFile(pkger.Include("/assets/NotoSerif-Regular.ttf"))
+	ttf, err := readFile("assets/NotoSerif-Regular.ttf")
 	if err != nil {
 		return err
 	}

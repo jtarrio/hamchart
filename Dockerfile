@@ -10,7 +10,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build
 FROM scratch
 WORKDIR /app
 COPY --from=build-stage /build/hamchart ./
-COPY --from=build-stage /build/assets ./assets/
-COPY --from=build-stage /build/web ./web/
 EXPOSE 8080
 ENTRYPOINT [ "./hamchart", "-server_address=:8080" ]

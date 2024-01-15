@@ -8,7 +8,6 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build
 
 FROM scratch
-#FROM gcr.io/distroless/static-debian11
 WORKDIR /app
 COPY --from=build-stage /build/hamchart ./
 COPY --from=build-stage /build/assets ./assets/

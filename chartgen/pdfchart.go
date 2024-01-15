@@ -19,11 +19,11 @@ package chartgen
 import (
 	"bytes"
 	"fmt"
+	"hamchart/assets"
 	"image"
 	"image/png"
 	"io"
 	"math"
-	"os"
 	"strings"
 	"unicode"
 
@@ -37,7 +37,7 @@ type PdfChart struct {
 	Latitude     float64
 	Longitude    float64
 	Name         string
-	WorldMap     *image.Image
+	WorldMap     image.Image
 	WidthInches  float64
 	HeightInches float64
 	DotsPerInch  int
@@ -46,16 +46,6 @@ type PdfChart struct {
 
 func pt2In(pt float64) float64 {
 	return pt / 72.0
-}
-
-func textOutXY(pdf *gofpdf.Fpdf, x float64, y float64, w float64, h float64, text string, align string) {
-	pdf.SetXY(x+leftMargin, y+topMargin)
-	textOut(pdf, w, h, text, align)
-}
-
-func textOut(pdf *gofpdf.Fpdf, w float64, h float64, text string, align string) {
-	_, lh := pdf.GetFontSize()
-	pdf.CellFormat(w, h*lh, text, "", 2, align, false, 0, "")
 }
 
 func smallCapsOut(pdf *gofpdf.Fpdf, centerX float64, baselineY float64, text string) {
@@ -154,7 +144,7 @@ func deg2Str(degrees float64, posSymbol string, negSymbol string) string {
 
 func (c PdfChart) projectChart(pdf *gofpdf.Fpdf, centerX float64, centerY float64, radius float64) error {
 	chartDiameterPx := int(float64(c.DotsPerInch) * 2 * radius)
-	chartImage := Project(*c.WorldMap, math.Pi*c.Latitude/180, math.Pi*c.Longitude/180, chartDiameterPx)
+	chartImage := Project(c.WorldMap, math.Pi*c.Latitude/180, math.Pi*c.Longitude/180, chartDiameterPx)
 	var out bytes.Buffer
 	err := png.Encode(&out, chartImage)
 	if err != nil {
@@ -251,30 +241,12 @@ func (c PdfChart) drawChart(pdf *gofpdf.Fpdf, width float64, top float64, bottom
 	return nil
 }
 
-func readFile(name string) ([]byte, error) {
-	file, err := os.Open(name)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	var buffer bytes.Buffer
-	_, err = buffer.ReadFrom(file)
-	if err != nil {
-		return nil, err
-	}
-	return buffer.Bytes(), nil
-}
-
 // Generate outputs a PDF to the given writer with the given configuration.
 func (c PdfChart) Generate(out io.Writer) error {
 	contentWidth, contentHeight := c.WidthInches-(leftMargin+rightMargin), c.HeightInches-(topMargin+bottomMargin)
-	ttf, err := readFile("assets/NotoSerif-Regular.ttf")
-	if err != nil {
-		return err
-	}
 
 	pdf := gofpdf.NewCustom(&gofpdf.InitType{UnitStr: "in", Size: gofpdf.SizeType{Wd: c.WidthInches, Ht: c.HeightInches}})
-	pdf.AddUTF8FontFromBytes("NotoSerif", "", ttf)
+	pdf.AddUTF8FontFromBytes("NotoSerif", "", assets.Font)
 	pdf.SetMargins(leftMargin, topMargin, rightMargin)
 	pdf.SetAutoPageBreak(false, bottomMargin)
 	pdf.SetTextColor(0, 0, 0)
@@ -289,7 +261,7 @@ func (c PdfChart) Generate(out io.Writer) error {
 	pdf.SetXY(0, pt2In(headingUnits*60))
 	pdf.WriteAligned(0, pt2In(headingUnits*19), c.makeTitle(), "C")
 
-	err = c.drawChart(pdf, contentWidth, pdf.GetY()+pt2In(headingUnits*19)-topMargin, contentHeight-pt2In(8+4*6))
+	err := c.drawChart(pdf, contentWidth, pdf.GetY()+pt2In(headingUnits*19)-topMargin, contentHeight-pt2In(8+4*6))
 	if err != nil {
 		return err
 	}

@@ -17,28 +17,28 @@
 package chartgen
 
 import (
+	"bytes"
 	"fmt"
+	"hamchart/assets"
 	"image"
 	"image/png"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 )
 
-var worldMap image.Image
+type chartHandler struct {
+	worldMap image.Image
+}
 
-func init() {
-	file, err := os.Open("assets/land_shallow_topo_8192.png")
+func NewChartHandler() (http.Handler, error) {
+	photo := bytes.NewReader(assets.EarthPhoto)
+	worldMap, err := png.Decode(photo)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	defer file.Close()
-	worldMap, err = png.Decode(file)
-	if err != nil {
-		panic(err)
-	}
+	return &chartHandler{worldMap: worldMap}, nil
 }
 
 func getNum(req *http.Request, name string, def float64) float64 {
@@ -78,8 +78,7 @@ func getSize(req *http.Request, name string, def string) (width float64, height 
 	}
 }
 
-// ChartHandler interprets the form parameters in an HTTP Request and produces a response in PDF format.
-func ChartHandler(w http.ResponseWriter, req *http.Request) {
+func (h *chartHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	err := req.ParseForm()
 	if err != nil {
 		log.Printf("Error parsing request parameters: %s", err)
@@ -100,7 +99,7 @@ func ChartHandler(w http.ResponseWriter, req *http.Request) {
 		HeightInches: height,
 		DotsPerInch:  300,
 		Metric:       metric,
-		WorldMap:     &worldMap,
+		WorldMap:     h.worldMap,
 	}
 
 	log.Printf("Generating chart for (%f,%f)[%s] size:%fx%f metric:%t", latitude, longitude, name, width, height, metric)

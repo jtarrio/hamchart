@@ -19,6 +19,7 @@ package main
 import (
 	"flag"
 	"hamchart/chartgen"
+	"hamchart/web"
 	"log"
 	"net/http"
 )
@@ -28,9 +29,14 @@ var serverAddress = flag.String("server_address", "127.0.0.1:8080", "Address of 
 func main() {
 	flag.Parse()
 
+	chartHandler, err := chartgen.NewChartHandler()
+	if err != nil {
+		panic(err)
+	}
+
 	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.Dir("web")))
-	mux.HandleFunc("/chart", chartgen.ChartHandler)
+	mux.Handle("/", http.FileServer(http.FS(web.Content)))
+	mux.Handle("/chart", chartHandler)
 
 	server := &http.Server{
 		Addr:    *serverAddress,
